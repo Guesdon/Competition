@@ -151,4 +151,16 @@ class Controllers {
         return $tree;
     }
 
+    public static function supprimeElementTableau($array, $posDeleteElement){
+        $tmpArray = [];
+
+        for ($i=0; $i< count($array); $i++){
+            if ($i!=$posDeleteElement){
+                array_push($tmpArray, $array($i));
+            }
+        }
+
+        return $tmpArray;
+    }
+
 }
