@@ -1,189 +1,71 @@
 <?php
-    $nbPlayers = 16;
 
-    $nbColumns = 2 * (log($nbPlayers,2)) + 1;
+$nbPlayers = 8;
 
-    $nbLignes = $nbPlayers*2;
+$nbColumns = 2 * (log($nbPlayers,2)) + 1;
+$nbLignes = $nbPlayers*2;
 
-    $tree = [];
+$tree= Controllers::buildArrayTree($nbColumns, $nbLignes);
 
-    echo($nbColumns. "<br>");
-    echo($nbLignes. "<br>");
+?>
 
-    $players = true;
-    $xPart = 0;
+<div class="wrapper<?php echo $nbPlayers?>">
+
+<?php
+
+for ($j = 0; $j < $nbLignes; $j++){
     for($i = 0; $i < $nbColumns; $i++){
-        $column = [];
-        $margeTop = pow(2,$xPart);
-        $margeBot = pow(2,$xPart)-1;
-        $yFrom = "P";
-        $yPart = "T";
-        $yState = 1;
-        $branch = "start";
-        //echo($margeTop." ".$margeBot. "<br>");
-        for ($j = 0; $j < $nbLignes; $j++){
+        switch ($tree[$i][$j]){
+            case "J":
+                ?>
+                <div style="grid-column: <?php echo($i+1) ?> ; grid-row: <?php echo($j+1) ?>; text-align: center; border: solid 1px;">
+                    X
+                </div>
+                <?php
+            break;
 
-            $type="";
+            case "\\":
+                ?>
+                <div class="wrapper2x2" style="grid-column: <?php echo($i+1) ?> ; grid-row: <?php echo($j+1) ?>;">
+                    <div class="leftToBot1"></div>
+                    <div class="leftToBot2"></div>
+                    <div class="leftToBot3"></div>
+                </div>
+                <?php
+            break;
 
-            switch($yPart){
-                case "T":
-                    if($players){
-                        $type = "void";
-                        if($yState < $margeTop){
-                            $yState++;
-                        }else{
-                            $yPart="P";
-                            $yState=1;
-                        }
-                    }else{
-                        switch($yFrom){
-                            case "P":
-                                if($branch === "start"){
-                                    $type = "void";
-                                }else{
-                                    $type="cross";
-                                }
-                                if($yState < $margeTop){
-                                    $yState++;
-                                }else{
-                                    $yPart="P";
-                                    $yFrom="T";
-                                    $yState=1;
-                                }
-                            break;
-                            case "T":
-                                if($branch === "start"){
-                                    $type = "void";
-                                }else{
-                                    $type="bar";
-                                }
-                                if($yState < $margeTop){
-                                    $yState++;
-                                    $yFrom="T";
-                                }else{
-                                    $yPart="P";
-                                    $yFrom="T";
-                                    $yState=1;
-                                }
-                            break;
-                            case "B":
-                                if($branch === "start"){
-                                    $type = "void";
-                                }else{
-                                    $type="cross";
-                                }
-                                if($yState < $margeTop){
-                                    $yState++;
-                                    $yFrom="T";
-                                }else{
-                                    $yPart="P";
-                                    $yFrom="T";
-                                    $yState=1;
-                                }
-                            break;
-                        }
-                    }
-                break;
+            case "X":
+                ?>
+                <div class="wrapper2x2" style="grid-column: <?php echo($i+1) ?> ; grid-row: <?php echo($j+1) ?>;">
+                    <div class="cross1"></div>
+                    <div class="cross2"></div>
+                    <div class="cross3"></div>
+                </div>
+                <?php
+            break;
+            
+            case "/":
+                ?>
+                <div class="wrapper2x2" style="grid-column: <?php echo($i+1) ?> ; grid-row: <?php echo($j+1) ?>;">
+                    <div class="leftToTop1"></div>
+                    <div class="leftToTop2"></div>
+                    <div class="leftToTop3"></div>
+                </div>
+                <?php
+            break;
 
-                case "P":
-                    if($players){
-                        $type = "player";
-                        if ($margeBot>0){
-                            $yPart="B";
-                        }else{
-                            $yPart="T";
-                        }
-                    }else{
-                        if($branch === "start"){
-                            $type = "left to bot";
-                            $branch = "end";
-                        }else{
-                            $type = "left to top";
-                            $branch = "start";
-                        }
-                        
-                        if ($margeBot>0){
-                            $yPart="B";
-                            $yFrom="P";
-                        }else{
-                            $yFrom="P";
-                            $yPart="T";
-                        }
-                    }
-                break;
-
-                case "B":
-                    if($players){
-                        $type = "void";
-                        if($yState < $margeBot){
-                            $yState++;
-                        }else{
-                            $yPart="T";
-                            $yState=1;
-                        }
-                    }else{
-                        if($branch === "start"){
-                            $type = "void";
-                        }else{
-                            $type = "bar";
-                        }
-                        if($yState < $margeBot){
-                            $yState++;
-                        }else{
-                            $yFrom="B";
-                            $yPart="T";
-                            $yState=1;
-                        }
-                    }
-                break;
-            }
-
-            //echo($type . "<br>");
-
-            switch ($type){
-                case "void":
-                    array_push($column, "0");
-                break;
-
-                case "cross":
-                    array_push($column, "x");
-                break;
-
-                case "left to bot":
-                    array_push($column, "\\");
-                break;
-
-                case "left to top":
-                    array_push($column, "/");
-                break;
-
-                case "bar":
-                    array_push($column, "|");
-                break;
-
-                case "player":
-                    array_push($column, "J");
-                break;
-
-                default : 
-                    array_push($column, "N");
-                break;
-            }
-        }
-
-        array_push($tree, $column);
-
-        if ($players === true){
-            $players = false;
-        }else{
-            $players = true;
-            $xPart++;
+            case "|":
+                ?>
+                <div class="wrapper2x2" style="grid-column: <?php echo($i+1) ?> ; grid-row: <?php echo($j+1) ?>;">
+                    <div class="upToBot1"></div>
+                    <div class="upToBot2"></div>
+                </div>
+                <?php
+            break;
         }
     }
-    for ($j = 0; $j < $nbLignes; $j++){
-        for($i = 0; $i < $nbColumns; $i++){
-            echo($tree[$i][$j]. " ");
-        }
-        echo('<br>');
-    }
-    
+}
+
+?>
+
+</div>

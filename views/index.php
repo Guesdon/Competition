@@ -5,7 +5,10 @@
 
     require_once ("../conf/generalConf.php");
 
-    require_once (PATH_MACHINE . "autoLoader/AutoLoad.php");
+    require_once(PATH_MACHINE."controllers/Controllers.php");
+
+
+    // require_once (PATH_MACHINE . "autoLoader/AutoLoad.php");
 
     
 
